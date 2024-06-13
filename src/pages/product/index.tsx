@@ -1,18 +1,38 @@
+import { fetcher } from "@/lib/swr/fetcher";
+import ProductView from "@/views/Product";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import useSWR from "swr";
 
 const ProductPage = () => {
-    const [isLogin, setIsLogin] = useState(false);
+    const [isLogin, setIsLogin] = useState(true);
+    // const [products, setProducts] = useState([]);
+    
     const { push } = useRouter();
+
+    useEffect(() => {
+        if(!isLogin){
+            push('/auth/login');
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[]);
+
+    const { data, error, isLoading } = useSWR(
+        "/api/product",
+        fetcher
+      );
+
     // useEffect(() => {
-    //     if(!isLogin){
-    //         push('/auth/login');
-    //     }
-    // // eslint-disable-next-line react-hooks/exhaustive-deps
-    // },[])
+    //     fetch('/api/product')
+    //     .then((res) => res.json())
+    //     .then((response) => {
+    //         setProducts(response.data);
+    //     })
+    // },[]);
+
     return (
         <div>
-            <h1>Product Page</h1>
+            <ProductView products={isLoading ? [] : data.data} />
         </div>
     )
 };
